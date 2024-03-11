@@ -11,6 +11,8 @@ plt.title('Distribution of Target Variable (HeartDisease)')
 plt.show()
 
 
+
+
 df.hist(bins=50, figsize=(20, 15))
 #plt.show()
 
@@ -26,7 +28,17 @@ df['HeartDisease'] = df['HeartDisease'].map({'No': 0, 'Yes': 1})  # Example for 
 print(df)
 
 # Compute the correlation matrix
-correlation_matrix = df.corr()
+#correlation_matrix = df.corr()
+race_counts = df['Race'].value_counts()
+
+# Creating a bar chart
+plt.figure(figsize=(10, 6))
+race_counts.plot(kind='bar')
+plt.title('Distribution of Races')
+plt.xlabel('Race')
+plt.ylabel('Count')
+plt.xticks(rotation=45)  # Rotates the race names for better readability
+plt.show()
 
 # Visualize the correlation matrix
 #plt.figure(figsize=(10, 8))
