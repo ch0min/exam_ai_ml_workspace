@@ -9,23 +9,45 @@ df = pd.read_csv('/Users/christoffernielsen/PycharmProjects/exam_ai_ml_workspace
 dict_replace = {'No': 0, 'Yes': 1}
 df = df.replace(dict_replace)
 
-X = df.drop("HeartDisease", axis=1)
-y = df["HeartDisease"]
+dict_sex = {'Female': 0, 'Male': 1}
+df = df.replace(dict_replace)
 
-# Splitting dataset into testing and training
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
+def categorize_bmi(bmi):
+    if bmi < 18.5:
+        return 'Underweight (< 18.5)'
+    elif 18.5 <= bmi < 25.0:
+        return 'Normal weight (18.5 - 25.0)'
+    elif 25.0 <= bmi < 30.0:
+        return 'Overweight (25.0 - 30.0)'
+    else:
+        return 'Obese (30 <)'
 
-# df.info()
-# df.describe()
-# df.head()
+# Apply the function to the DataFrame
+df['BMI'] = df['BMI'].apply(categorize_bmi)
 
-y_train_df = y_train.to_frame()
+dict_BMI = {'Underweight (< 18.5)': 0, 'Normal weight (18.5 - 25.0)': 1,
+            'Overweight (25.0 - 30.0)': 2, 'Obese (30 <)': 3}
+df = df.replace(dict_BMI)
 
-df_training = pd.concat([X_train, y_train_df], axis=1)
+age_ranges = df["AgeCategory"].unique()
 
-df_training.info()
+age_codes, _ = pd.factorize(age_ranges, sort=True)
 
-df_training.to_pickle('/Users/christoffernielsen/PycharmProjects/exam_ai_ml_workspace/src/OLA-2/data/training.pkl')
+age_range_to_code = dict(zip(age_ranges, age_codes))
+
+df["AgeCategory"] = df["AgeCategory"].map(age_range_to_code)
+
+
+print(df["AgeCategory"])
+
+
+
+
+
+
+
+
+
+
+#df_training.to_pickle('/Users/christoffernielsen/PycharmProjects/exam_ai_ml_workspace/src/OLA-2/data/training.pkl')
