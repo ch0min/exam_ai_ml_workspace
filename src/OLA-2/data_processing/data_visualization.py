@@ -4,7 +4,7 @@ import numpy as np
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 
-df = pd.read_pickle('/Users/christoffernielsen/PycharmProjects/exam_ai_ml_workspace/src/OLA-2/data/training.pkl')
+df = pd.read_pickle('../data/training.pkl')
 
 df['HeartDisease'].value_counts().plot(kind='bar')
 plt.title('Distribution of Target Variable (HeartDisease)')
