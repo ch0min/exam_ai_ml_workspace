@@ -19,7 +19,7 @@ df_test = pd.read_pickle("../data/processed/test_data_scaled.pkl")
 #############################
 
 # Sampling since SMV takes a long time to evaluate when the dataset is large:
-df = df_train.sample(frac=0.2, random_state=42)
+df_train = df_train.sample(frac=0.2, random_state=42)
 
 # Define features and target.
 X_train = df_train.drop("HeartDisease", axis=1)
