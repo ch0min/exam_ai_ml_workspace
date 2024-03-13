@@ -52,17 +52,17 @@ print("F1 score:", f1)
 # Test data
 test_data = pd.DataFrame(
     {
-        "BMI": [2],
+        "BMI": [3],
         "Smoking": [1],
-        "AlcoholDrinking": [1],
+        "AlcoholDrinking": [0],
         "Stroke": [0],
-        "PhysicalHealth": [0.0],
-        "MentalHealth": [0.0],
+        "PhysicalHealth": [30.0],
+        "MentalHealth": [30.0],
         "DiffWalking": [0],
         "Sex": [1],
         "AgeCategory": [11],
         "PhysicalActivity": [1],
-        "SleepTime": [95877],
+        "SleepTime": [9],
         "Asthma": [1],
         "KidneyDisease": [1],
         "SkinCancer": [0],
