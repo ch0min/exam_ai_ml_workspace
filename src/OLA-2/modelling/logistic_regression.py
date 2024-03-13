@@ -8,6 +8,7 @@ from sklearn.metrics import (
     roc_curve,
 )
 import matplotlib.pyplot as plt
+from imblearn.over_sampling import SMOTE
 
 pd.set_option("display.max_columns", 100)
 
@@ -34,12 +35,21 @@ df_test = pd.read_pickle("../data/processed/test_data_scaled_stratified.pkl")
 X_train, y_train = df_train.drop("HeartDisease", axis=1), df_train["HeartDisease"]
 X_test, y_test = df_test.drop("HeartDisease", axis=1), df_test["HeartDisease"]
 
+# SMOTE (Synthetic Minority Over-sampling Technique) is a technique used to address the class imbalance problem in machine learning.
+# It generates synthetic samples of the minority class by interpolating between existing minority class samples.
+# This helps to balance the class distribution and improve the performance of machine learning models.
+# In this code, SMOTE is used to oversample the minority class in the training data (X_train, y_train).
+# The SMOTE algorithm is applied to create synthetic samples, increasing the number of minority class instances.
+# This helps to mitigate the impact of class imbalance and improve the accuracy of the logistic regression model.
+sm = SMOTE(random_state=42)
+X_train, y_train = sm.fit_resample(X_train, y_train)
+
 # Create an instance of Logistic Regression
 model = LogisticRegression()
 
-# GridSearch
+# # GridSearch
 # param_grid = {"penalty": ["l1", "l2"], "C": [0.001, 0.01, 0.1, 1, 10, 100]}
-# grid_search = GridSearchCV(model, param_grid, cv=5)
+# grid_search = GridSearchCV(model, param_grid, cv=5, scoring="accuracy")
 
 # # Fit the model to the data
 # grid_search.fit(X_train, y_train)
