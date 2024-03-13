@@ -6,12 +6,18 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import precision_score, recall_score
 
 pd.set_option("display.max_columns", 100)
-df = pd.read_pickle("../data/cleaned.pkl")
+# df = pd.read_pickle("../data/cleaned.pkl")
 
 # Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(
-    df.drop("HeartDisease", axis=1), df["HeartDisease"], test_size=0.2, random_state=42
-)
+# X_train, X_test, y_train, y_test = train_test_split(
+#     df.drop("HeartDisease", axis=1), df["HeartDisease"], test_size=0.2, random_state=42
+# )
+df_train = pd.read_pickle("../data/processed/train_data_scaled.pkl")
+df_test = pd.read_pickle("../data/processed/test_data_scaled.pkl")
+
+X_train, y_train = df_train.drop("HeartDisease", axis=1), df_train["HeartDisease"]
+X_test, y_test = df_test.drop("HeartDisease", axis=2), df_test["HeartDisease"]
+
 
 # X, y = df.drop("HeartDisease", axis=1), df["HeartDisease"]
 
@@ -70,11 +76,7 @@ test_data = pd.DataFrame(
         "Diabetic_1": [0],
         "Diabetic_No, borderline diabetes": [0],
         "Diabetic_Yes (during pregnancy)": [1],
-        "GenHealth_Excellent": [0],
-        "GenHealth_Fair": [0],
-        "GenHealth_Good": [0],
-        "GenHealth_Poor": [0],
-        "GenHealth_Very good": [1],
+        "GenHealth": [0],
         "Race_American Indian/Alaskan Native": [0],
         "Race_Asian": [0],
         "Race_Black": [0],
