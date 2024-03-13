@@ -2,77 +2,76 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from sklearn.model_selection import train_test_split
 
-# display all columns
+# Display all columns.
 pd.set_option("display.max_columns", 100)
 
-# df = pd.read_csv('/Users/christoffernielsen/PycharmProjects/exam_ai_ml_workspace/src/OLA-2/data/heart_2020_cleaned.csv')
-df = pd.read_csv("../data/heart_2020_cleaned.csv")
-
-### Data cleaning
-dict_replace = {"No": 0, "Yes": 1}
-df = df.replace(dict_replace)
-
-dict_sex = {"Female": 0, "Male": 1}
-df = df.replace(dict_sex)
-
-# Diabetic
-df = pd.get_dummies(df, prefix="Diabetic", columns=["Diabetic"])
+# Loading the dataset.
+df = pd.read_csv("../data/raw/heart_2020_cleaned.csv")
 
 
-# BMI
-def categorize_bmi(bmi):
-    if bmi < 18.5:
-        return "Underweight (< 18.5)"
-    elif 18.5 <= bmi < 25.0:
-        return "Normal weight (18.5 - 25.0)"
-    elif 25.0 <= bmi < 30.0:
-        return "Overweight (25.0 - 30.0)"
-    else:
-        return "Obese (30 <)"
+###########################
+### DATA TRANSFORMATION ###
+###########################
+
+### BINARY VARIABLES ###
+# Encoding all features which include No/Yes to 0/1.
+"""
+    HeartDisease, Smoking, AlcoholDrinking, Stroke, DiffWalking,
+    Diabetic, PhysicalActivity, Asthma, KidneyDisease, SkinCancer.
+    (10)
+"""
+df = df.replace({"No": 0, "Yes": 1})
+
+# Encoding "Sex" with 0/1.
+df["Sex"] = df["Sex"].replace({"Female": 0, "Male": 1})
+# df["Sex"].value_counts()
+
+# Encoding "Diabetic" with 0/1, but first we replace everything with No / Yes.
+df["Diabetic"] = df["Diabetic"].replace(
+    {
+        "No, borderline diabetes": "No",
+        "Yes (during pregnancy)": "Yes",
+    }
+)
+df["Diabetic"] = df["Diabetic"].replace({"No": 0, "Yes": 1})
+# df["Diabetic"].value_counts()
 
 
-# Apply the function to the DataFrame
-df["BMI"] = df["BMI"].apply(categorize_bmi)
-
-dict_BMI = {
-    "Underweight (< 18.5)": 0,
-    "Normal weight (18.5 - 25.0)": 1,
-    "Overweight (25.0 - 30.0)": 2,
-    "Obese (30 <)": 3,
-}
-df = df.replace(dict_BMI)
-
-# Age Ranges
+### ORDINAL VARIABLES ###
+# Categorizing and Encoding "AgeCategory" into 13 groups.
 age_ranges = df["AgeCategory"].unique()
-
 age_codes, _ = pd.factorize(age_ranges, sort=True)
-
 age_range_to_code = dict(zip(age_ranges, age_codes))
-
-df["AgeCategory"] = df["AgeCategory"].map(age_range_to_code)
-
-# General Health
-
-# ordinal encoding:
-# Define a mapping from category to numerical value
-# genhealth_mapping = {"Poor": 1, "Fair": 2, "Good": 3, "Very good": 4, "Excellent": 5}
-
-# Apply the mapping to the "GenHealth" column
-# df["GenHealth"] = df["GenHealth"].map(genhealth_mapping)
-
-# onehot encode
-# Create one-hot encoded features for the "GenHealth" column
-df = pd.get_dummies(df, prefix="GenHealth", columns=["GenHealth"])
-
-# In the case of the "GenHealth" variable, one-hot encoding may be more appropriate than pd.factorize
-# because the categories do not have a clear ordering, and treating them as ordinal variables may not be accurate.
-# However, you could experiment with both approaches and see which one works better for your specific use case.
-
-# Race
-# Create one-hot encoded features for the "Race" column
-df = pd.get_dummies(df, prefix="Race", columns=["Race"])
+df["AgeCategory"] = df["AgeCategory"].replace(age_range_to_code)
+# df["AgeCategory"].value_counts().sort_index()
 
 
-df.to_pickle("../data/cleaned.pkl")
+# Categorizing and Encoding "BMI" into 4 different groups.
+bmi_categories = ['Underweight (< 18.5)', 'Normal weight (18.5 - 25.0)', 'Overweight (25.0 - 30.0)', 'Obese (30 <)']
+bmi_bins = [-np.inf, 18.5, 25.0, 30.0, np.inf]
+df['BMI'] = pd.cut(df['BMI'], bins=bmi_bins, labels=bmi_categories)
+
+dict_BMI = {category: code for code, category in enumerate(bmi_categories)}
+df['BMI'] = df['BMI'].map(dict_BMI)
+# df["BMI"].value_counts()
+
+# Categorizing and Encoding "GenHealth" into 5 different groups.
+df["GenHealth"] = df["GenHealth"].replace(
+    {"Poor": 0, "Fair": 1, "Good": 2, "Very good": 3, "Excellent": 4}
+)
+# df["GenHealth"].value_counts()
+
+
+### NOMINAL VARIABLES ###
+# One-hot Encoding "Race" into 6 groups.
+"""White, Hispanic, Black, Other, Asian, American Indian/Alskan Native."""
+df = pd.get_dummies(df, columns=["Race"])
+df.head()
+# race_columns = [col for col in df.columns if col.startswith("Race_")]
+# race_value_counts = df[race_columns].sum().sort_values(ascending=False)
+# race_value_counts
+
+
+# Data processed to pickle file.
+df.to_pickle("../data/processed/data_processed.pkl")
