@@ -66,11 +66,11 @@ svm_model.fit(X_train, y_train)
 # 5-fold cross-validation, focusing on F1-score.
 # f1_scores = cross_val_score(svm_model, X_train_scaled, y_train, cv=3, scoring="f1")
 
-print("F1 Score for each fold:", f1_scores)
+# print("F1 Score for each fold:", f1_scores)
 
 # Calculate the average F1 score:
-average_f1 = f1_scores.mean()
-print("Average F1 score:", average_f1)
+# average_f1 = f1_scores.mean()
+# print("Average F1 score:", average_f1)
 
 
 #############################
