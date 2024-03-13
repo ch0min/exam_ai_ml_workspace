@@ -47,14 +47,23 @@ X_train, y_train = sm.fit_resample(X_train, y_train)
 # Create an instance of Logistic Regression
 model = LogisticRegression()
 
-# # GridSearch
-# param_grid = {"penalty": ["l1", "l2"], "C": [0.001, 0.01, 0.1, 1, 10, 100]}
+# GridSearch
+
+# param_grid = {
+#     "penalty": ["l1", "l2"],
+#     "C": [0.001, 0.01, 0.1, 1, 10, 100],
+# }
+# param_grid = {
+#     "penalty": ["l1", "l2", "elasticnet", "none"],
+#     "C": [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000],
+# }
+# grid_search = GridSearchCV(model, param_grid, cv=5, scoring="recall")
 # grid_search = GridSearchCV(model, param_grid, cv=5, scoring="accuracy")
 
-# # Fit the model to the data
+# Fit the model to the data
 # grid_search.fit(X_train, y_train)
 
-# # Get the best parameters and best score
+# Get the best parameters and best score
 # best_params = grid_search.best_params_
 # best_score = grid_search.best_score_
 
