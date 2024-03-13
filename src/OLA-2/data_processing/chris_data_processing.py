@@ -4,7 +4,7 @@ import numpy as np
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 
-df = pd.read_csv(r'C:\Users\chris\PycharmProjects\exam_ai_ml_workspace\src\OLA-2\data\heart_2020_cleaned.csv')
+df = pd.read_csv('/Users/christoffernielsen/PycharmProjects/exam_ai_ml_workspace/src/OLA-2/data/heart_2020_cleaned.csv')
 
 # Replace 'No'/'Yes' with 0/1
 dict_replace = {'No': 0, 'Yes': 1}
@@ -43,4 +43,4 @@ df["AgeCategory"] = df["AgeCategory"].map(age_range_to_code)
 
 print(df[["AgeCategory", "BMI"]].head())
 
-df.to_csv("data_processing_tests.csv", index=False)
+df.to_csv("data_processing_chris_example.csv", index=False)
