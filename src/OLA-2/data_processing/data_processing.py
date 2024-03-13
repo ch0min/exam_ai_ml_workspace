@@ -48,18 +48,12 @@ df["AgeCategory"] = df["AgeCategory"].replace(age_range_to_code)
 
 
 # Categorizing and Encoding "BMI" into 4 different groups.
-def categorize_and_encode_bmi(bmi):
-    if bmi < 18.5:
-        return 0  # Underweight
-    elif 18.5 <= bmi < 25.0:
-        return 1  # Normal weight
-    elif 25.0 <= bmi < 30.0:
-        return 2  # Overweight
-    else:
-        return 3  # Obese
+bmi_categories = ['Underweight (< 18.5)', 'Normal weight (18.5 - 25.0)', 'Overweight (25.0 - 30.0)', 'Obese (30 <)']
+bmi_bins = [-np.inf, 18.5, 25.0, 30.0, np.inf]
+df['BMI'] = pd.cut(df['BMI'], bins=bmi_bins, labels=bmi_categories)
 
-
-df["BMI"] = df["BMI"].apply(categorize_and_encode_bmi)
+dict_BMI = {category: code for code, category in enumerate(bmi_categories)}
+df['BMI'] = df['BMI'].map(dict_BMI)
 # df["BMI"].value_counts()
 
 # Categorizing and Encoding "GenHealth" into 5 different groups.
