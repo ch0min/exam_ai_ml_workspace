@@ -3,8 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
-from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
 
@@ -12,6 +11,10 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 # Loading train and test files.
 df_train = pd.read_pickle("../data/processed/train_data_scaled.pkl")
 df_test = pd.read_pickle("../data/processed/test_data_scaled.pkl")
+
+# df_train = pd.read_pickle("../data/processed/train_data_scaled_stratified.pkl")
+# df_test = pd.read_pickle("../data/processed/test_data_scaled_stratified.pkl")
+
 
 
 #############################
@@ -43,12 +46,15 @@ svm_model = SVC(random_state=42, class_weight="balanced")
 svm_model.fit(X_train, y_train)
 
 
+
 #############################
 # Evaluation and Cross-Validation
 #############################
 
+stratified_kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
 # 5-fold cross-validation, focusing on F1-score.
-f1_scores = cross_val_score(svm_model, X_train, y_train, cv=3, scoring="f1")
+f1_scores = cross_val_score(svm_model, X_train, y_train, cv=stratified_kfold, scoring="f1")
 
 print("F1 Score for each fold:", f1_scores)
 
