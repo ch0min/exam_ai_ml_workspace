@@ -19,7 +19,7 @@ X = df.drop('HeartDisease', axis=1)  # Features: all columns except 'HeartDiseas
 y = df['HeartDisease']  # Target variable: 'HeartDisease'
 
 # Split the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Initialize and train the random forest classifier with class_weight='balanced'
 rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42, class_weight='balanced')
