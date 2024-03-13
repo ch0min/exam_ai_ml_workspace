@@ -1,9 +1,13 @@
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import f1_score
-from sklearn.metrics import precision_score, recall_score
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import (
+    classification_report,
+    precision_score,
+    precision_recall_curve,
+    roc_curve,
+)
+import matplotlib.pyplot as plt
 
 pd.set_option("display.max_columns", 100)
 
@@ -32,7 +36,7 @@ X_test, y_test = df_test.drop("HeartDisease", axis=1), df_test["HeartDisease"]
 
 
 # Create an instance of Logistic Regression
-model = LogisticRegression()
+model = LogisticRegression(class_weight="balanced")
 
 # Fit the model to the data
 model.fit(X_train, y_train)
@@ -50,70 +54,61 @@ precision = precision_score(y_test, y_pred)
 
 
 # Create an instance of Logistic Regression
+# Define the parameter grid
+param_grid = {"penalty": ["l1", "l2"], "C": [0.001, 0.01, 0.1, 1, 10, 100]}
+
+# Create an instance of Logistic Regression
 model = LogisticRegression()
+
+# Create GridSearchCV object
+# grid_search = GridSearchCV(model, param_grid, cv=5)
+
+# # Fit the model to the data
+# grid_search.fit(X_train, y_train)
+
+# # Get the best parameters and best score
+# best_params = grid_search.best_params_
+# best_score = grid_search.best_score_
+
+# print("Best Parameters:", best_params)
+# print("Best Score:", best_score)
 
 # Fit the model to the data
 model.fit(X_train, y_train)
+# model = grid_search.best_estimator_
 
 
-# Evaluate the model
-accuracy = model.score(X_test, y_test)
-print("Accuracy:", accuracy)
-# 0.9137572507387545
+# Get the predicted probabilities
+# y_scores = model.predict_proba(X_train)[:, 1]
 
-# Generate predictions
+# # Get precision and recall values for different thresholds
+# precisions, recalls, thresholds = precision_recall_curve(y_train, y_scores)
+
+# # Find the threshold that gives you the best recall
+# # This will depend on how much you want to prioritize recall over precision
+# # For example, you might choose the threshold that gives you a recall > 0.8
+# idx = next(i for i, recall in enumerate(recalls) if recall < 0.8) - 1
+# best_threshold = thresholds[idx]
+
+# Use this threshold to convert the probabilities into class predictions
+# y_pred = (y_scores > best_threshold).astype(int)
 y_pred = model.predict(X_test)
-precision = precision_score(y_test, y_pred)
-# 0.5363984674329502
-recall = recall_score(y_test, y_pred)
-# 0.10014306151645208
 
+print(classification_report(y_test, y_pred))
 
-print("Precision:", precision)
-print("Recall:", recall)
+# roc curve
+# Calculate the predicted probabilities
+y_scores = model.predict_proba(X_test)[:, 1]
 
-# confusion matrix
-confusion_matrix(y_test, y_pred)
-# [[57883,   484],
-# [ 5032,   560]]
+# Calculate the false positive rate, true positive rate, and thresholds
+fpr, tpr, thresholds = roc_curve(y_test, y_scores)
 
-# calculate f1 score
-f1 = f1_score(y_test, y_pred)
-print("F1 score:", f1)
-# 0.16877637130801687
-
-
-# Test data
-# test_data = pd.DataFrame(
-#     {
-#         "BMI": [3],
-#         "Smoking": [1],
-#         "AlcoholDrinking": [0],
-#         "Stroke": [0],
-#         "PhysicalHealth": [30.0],
-#         "MentalHealth": [30.0],
-#         "DiffWalking": [0],
-#         "Sex": [1],
-#         "AgeCategory": [11],
-#         "PhysicalActivity": [1],
-#         "SleepTime": [9],
-#         "Asthma": [1],
-#         "KidneyDisease": [1],
-#         "SkinCancer": [0],
-#         "Diabetic_0": [0],
-#         "Diabetic_1": [0],
-#         "Diabetic_No, borderline diabetes": [0],
-#         "Diabetic_Yes (during pregnancy)": [1],
-#         "GenHealth": [0],
-#         "Race_American Indian/Alaskan Native": [0],
-#         "Race_Asian": [0],
-#         "Race_Black": [0],
-#         "Race_Hispanic": [0],
-#         "Race_Other": [0],
-#         "Race_White": [1],
-#     }
-# )
-
-# Generate predictions
-# predictions = model.predict(test_data)
-# print(predictions)
+# Plot the ROC curve
+plt.plot(fpr, tpr)
+plt.plot(
+    [0, 1], [0, 1], linestyle="--", color="r"
+)  # Add the dotted line for random classifier
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("Receiver Operating Characteristic (ROC) Curve")
+plt.show()
