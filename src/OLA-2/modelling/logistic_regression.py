@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 pd.set_option("display.max_columns", 100)
 
-# no scaling or stratified sampling
+### no scaling or stratified sampling
 # df = pd.read_pickle("../data/processed/data_processed.pkl")
 
 # Split the data into training and testing sets
@@ -19,7 +19,7 @@ pd.set_option("display.max_columns", 100)
 #     df.drop("HeartDisease", axis=1), df["HeartDisease"], test_size=0.2, random_state=42
 # )
 
-# scaled
+### scaled
 # df_train = pd.read_pickle("../data/processed/train_data_scaled.pkl")
 # df_test = pd.read_pickle("../data/processed/test_data_scaled.pkl")
 
@@ -27,40 +27,18 @@ pd.set_option("display.max_columns", 100)
 # X_test, y_test = df_test.drop("HeartDisease", axis=1), df_test["HeartDisease"]
 
 
-# scaled
+### scaled and stratified
 df_train = pd.read_pickle("../data/processed/train_data_scaled_stratified.pkl")
 df_test = pd.read_pickle("../data/processed/test_data_scaled_stratified.pkl")
 
 X_train, y_train = df_train.drop("HeartDisease", axis=1), df_train["HeartDisease"]
 X_test, y_test = df_test.drop("HeartDisease", axis=1), df_test["HeartDisease"]
 
-
-# Create an instance of Logistic Regression
-model = LogisticRegression(class_weight="balanced")
-
-# Fit the model to the data
-model.fit(X_train, y_train)
-
-
-# Evaluate the model
-accuracy = model.score(X_test, y_test)
-print("Accuracy:", accuracy)
-# 0.9137572507387545
-
-# Generate predictions
-y_pred = model.predict(X_test)
-precision = precision_score(y_test, y_pred)
-# 0.5363984674329502
-
-
-# Create an instance of Logistic Regression
-# Define the parameter grid
-param_grid = {"penalty": ["l1", "l2"], "C": [0.001, 0.01, 0.1, 1, 10, 100]}
-
 # Create an instance of Logistic Regression
 model = LogisticRegression()
 
-# Create GridSearchCV object
+# GridSearch
+# param_grid = {"penalty": ["l1", "l2"], "C": [0.001, 0.01, 0.1, 1, 10, 100]}
 # grid_search = GridSearchCV(model, param_grid, cv=5)
 
 # # Fit the model to the data
@@ -73,25 +51,12 @@ model = LogisticRegression()
 # print("Best Parameters:", best_params)
 # print("Best Score:", best_score)
 
+
 # Fit the model to the data
-model.fit(X_train, y_train)
 # model = grid_search.best_estimator_
+model.fit(X_train, y_train)
 
-
-# Get the predicted probabilities
-# y_scores = model.predict_proba(X_train)[:, 1]
-
-# # Get precision and recall values for different thresholds
-# precisions, recalls, thresholds = precision_recall_curve(y_train, y_scores)
-
-# # Find the threshold that gives you the best recall
-# # This will depend on how much you want to prioritize recall over precision
-# # For example, you might choose the threshold that gives you a recall > 0.8
-# idx = next(i for i, recall in enumerate(recalls) if recall < 0.8) - 1
-# best_threshold = thresholds[idx]
-
-# Use this threshold to convert the probabilities into class predictions
-# y_pred = (y_scores > best_threshold).astype(int)
+# Evaluate the model
 y_pred = model.predict(X_test)
 
 print(classification_report(y_test, y_pred))
