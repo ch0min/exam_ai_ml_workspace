@@ -60,11 +60,11 @@ svm_model.fit(X_train, y_train)
 
 
 #############################
-# Cross-Validation
+# Evaluation and Cross-Validation
 #############################
 
 # 5-fold cross-validation, focusing on F1-score.
-# f1_scores = cross_val_score(svm_model, X_train_scaled, y_train, cv=3, scoring="f1")
+f1_scores = cross_val_score(svm_model, X_train_scaled, y_train, cv=3, scoring="f1")
 
 print("F1 Score for each fold:", f1_scores)
 
@@ -74,7 +74,7 @@ print("Average F1 score:", average_f1)
 
 
 #############################
-# Model Evaluation
+# Model Prediction
 #############################
 
 y_pred = svm_model.predict(X_test)
@@ -93,16 +93,4 @@ print("Recall:", recall)
 print("Classification Report:")
 print(classification_report_output)
 
-
-
-
-
-
-
-
-
-
-#############################
-# Make Predictions
-#############################
 
