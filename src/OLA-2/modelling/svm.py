@@ -51,10 +51,8 @@ svm_model.fit(X_train, y_train)
 # Evaluation and Cross-Validation
 #############################
 
-stratified_kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-
 # 5-fold cross-validation, focusing on F1-score.
-f1_scores = cross_val_score(svm_model, X_train, y_train, cv=stratified_kfold, scoring="f1")
+f1_scores = cross_val_score(svm_model, X_train, y_train, cv=3, scoring="f1")
 
 print("F1 Score for each fold:", f1_scores)
 
