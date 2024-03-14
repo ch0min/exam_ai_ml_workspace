@@ -30,9 +30,9 @@ y = df["HeartDisease"]
 # Define StratifiedKFold
 stratified_kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
-# for fold, (train_index, test_index) in enumerate(stratified_kfold.split(X, y)):
-#     X_train, X_test = X.iloc[train_index], X.iloc[test_index]
-#     y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+for fold, (train_index, test_index) in enumerate(stratified_kfold.split(X, y)):
+    X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+    y_train, y_test = y.iloc[train_index], y.iloc[test_index]
 
 
 # Plotting the class distribution in each fold
