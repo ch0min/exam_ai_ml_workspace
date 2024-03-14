@@ -2,6 +2,7 @@ import streamlit as st
 import pickle
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import StandardScaler
 
 
 def load_model():
@@ -72,17 +73,22 @@ def ordinal_variables(df):
     return df
 
 
-def nominal_variables(df, training_race_categories):
-    if "Race" in df.columns:
-        df = pd.get_dummies(df, columns=["Race"])
+def nominal_variables(df):
+    # One-hot Encoding "Race" into 6 groups.
+    df = pd.get_dummies(df, columns=["Race"])
 
-        # Add missing race categories from the training data
-        for category in training_race_categories:
-            if f"Race_{category}" not in df.columns:
-                df[f"Race_{category}"] = 0
-    else:
-        st.write("'Race' column does not exist in the DataFrame.")
-
+    # Add missing columns that the model expects
+    expected_columns = [
+        "Race_White",
+        "Race_Hispanic",
+        "Race_Black",
+        "Race_Other",
+        "Race_Asian",
+        "Race_American Indian/Alskan Native",
+    ]
+    for col in expected_columns:
+        if col not in df.columns:
+            df[col] = 0  # Add missing column with default value 0
     return df
 
 
@@ -90,22 +96,22 @@ def show_predict_page():
     st.title("Heart Disease Prediction")
 
     data_row = {
-        "BMI": 16.6,
+        "BMI": 11.0,
         "Smoking": "Yes",
-        "AlcoholDrinking": "No",
-        "Stroke": "No",
-        "PhysicalHealth": 30.0,
-        "MentalHealth": 30.0,
-        "DiffWalking": "No",
+        "AlcoholDrinking": "Yes",
+        "Stroke": "Yes",
+        "PhysicalHealth": 10.0,
+        "MentalHealth": 10.0,
+        "DiffWalking": "Yes",
         "Sex": "Female",
-        "AgeCategory": "55-59",
-        "Race": "White",
+        "AgeCategory": "18-24",
+        "Race": "Asian",
         "Diabetic": "Yes",
         "PhysicalActivity": "Yes",
         "GenHealth": "Very good",
-        "SleepTime": 5.0,
+        "SleepTime": 1.0,
         "Asthma": "Yes",
-        "KidneyDisease": "No",
+        "KidneyDisease": "Yes",
         "SkinCancer": "Yes",
     }
     df = pd.DataFrame([data_row])
@@ -113,18 +119,13 @@ def show_predict_page():
     # Apply the loaded preprocessing functions
     df = binary_variables(df)
     df = ordinal_variables(df)
-    training_race_categories = [
-        "White",
-        "Hispanic",
-        "Black",
-        "Other",
-        "Asian",
-        "American Indian/Alaskan Native",
-    ]
-    df = nominal_variables(df, training_race_categories)
+    df = nominal_variables(df)
 
-    prediction = regressor_loaded.predict(df)
-    st.subheader(f"The predicted outcome is {prediction[0]}")
+    # Predict probabilities
+    prediction = regressor_loaded.predict_proba(df)
+    percentage = prediction[:, 1] * 100
+
+    st.subheader(f"The predicted outcome is {percentage[0]:.2f}%")
 
 
 show_predict_page()
