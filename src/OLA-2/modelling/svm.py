@@ -15,14 +15,14 @@ from sklearn.metrics import (
 
 
 # Loading train and test files.
-# df_train = pd.read_pickle("../data/processed/train_data_scaled.pkl")
-# df_test = pd.read_pickle("../data/processed/test_data_scaled.pkl")
+df_train = pd.read_pickle("../data/processed/train_data_scaled.pkl")
+df_test = pd.read_pickle("../data/processed/test_data_scaled.pkl")
 
 # df_train = pd.read_pickle("../data/processed/train_data_scaled_stratified.pkl")
 # df_test = pd.read_pickle("../data/processed/test_data_scaled_stratified.pkl")
 
-df_train = pd.read_pickle("../data/processed/train_data_scaled_oversampling.pkl")
-df_test = pd.read_pickle("../data/processed/test_data_scaled_oversampling.pkl")
+# df_train = pd.read_pickle("../data/processed/train_data_scaled_oversampling.pkl")
+# df_test = pd.read_pickle("../data/processed/test_data_scaled_oversampling.pkl")
 
 print("Data loaded.")
 
@@ -32,7 +32,7 @@ print("Data loaded.")
 #############################
 
 # Sampling since SMV takes a long time to evaluate when the dataset is large:
-# df_train = df_train.sample(frac=0.2, random_state=42)
+df_train = df_train.sample(frac=0.1, random_state=42)
 
 print("Data sampling complete.")
 
