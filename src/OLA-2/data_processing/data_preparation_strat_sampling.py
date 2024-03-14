@@ -30,9 +30,32 @@ y = df["HeartDisease"]
 # Define StratifiedKFold
 stratified_kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
-for fold, (train_index, test_index) in enumerate(stratified_kfold.split(X, y)):
-    X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+# for fold, (train_index, test_index) in enumerate(stratified_kfold.split(X, y)):
+#     X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+#     y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+
+
+# Plotting the class distribution in each fold
+fig, axes = plt.subplots(5, 1, figsize=(10, 20))
+fig.tight_layout(pad=3.0)
+
+# Looping through each fold
+for i, (train_index, test_index) in enumerate(stratified_kfold.split(df, y)):
     y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+
+    # Counting the frequency of each class in both train and test sets
+    train_counts = y_train.value_counts(normalize=True)
+    test_counts = y_test.value_counts(normalize=True)
+
+    # Creating bar plots for each fold
+    axes[i].bar(train_counts.index + 0.00, train_counts.values, color='blue', width=0.25, label='Train')
+    axes[i].bar(test_counts.index + 0.25, test_counts.values, color='red', width=0.25, label='Test')
+    axes[i].set_title(f'Stratified Fold {i+1}')
+    axes[i].set_xticks([0, 1])
+    axes[i].set_xticklabels(['No Heart Disease', 'Heart Disease'])
+    axes[i].legend()
+
+plt.show()
 
 
 # Standardizing the features (data preprocessing/feature scaling).
