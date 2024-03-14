@@ -1,89 +1,98 @@
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import f1_score
-from sklearn.metrics import precision_score, recall_score
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import (
+    classification_report,
+    precision_score,
+    precision_recall_curve,
+    roc_curve,
+)
+import matplotlib.pyplot as plt
+from imblearn.over_sampling import SMOTE
 
 pd.set_option("display.max_columns", 100)
-df = pd.read_pickle("../data/cleaned.pkl")
+
+### no scaling or stratified sampling
+# df = pd.read_pickle("../data/processed/data_processed.pkl")
 
 # Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(
-    df.drop("HeartDisease", axis=1), df["HeartDisease"], test_size=0.2, random_state=42
-)
+# X_train, X_test, y_train, y_test = train_test_split(
+#     df.drop("HeartDisease", axis=1), df["HeartDisease"], test_size=0.2, random_state=42
+# )
 
-# X, y = df.drop("HeartDisease", axis=1), df["HeartDisease"]
+### scaled
+# df_train = pd.read_pickle("../data/processed/train_data_scaled.pkl")
+# df_test = pd.read_pickle("../data/processed/test_data_scaled.pkl")
+
+# X_train, y_train = df_train.drop("HeartDisease", axis=1), df_train["HeartDisease"]
+# X_test, y_test = df_test.drop("HeartDisease", axis=1), df_test["HeartDisease"]
+
+
+### scaled and stratified
+df_train = pd.read_pickle("../data/processed/train_data_scaled_stratified.pkl")
+df_test = pd.read_pickle("../data/processed/test_data_scaled_stratified.pkl")
+
+X_train, y_train = df_train.drop("HeartDisease", axis=1), df_train["HeartDisease"]
+X_test, y_test = df_test.drop("HeartDisease", axis=1), df_test["HeartDisease"]
+
+# SMOTE (Synthetic Minority Over-sampling Technique) is a technique used to address the class imbalance problem in machine learning.
+# It generates synthetic samples of the minority class by interpolating between existing minority class samples.
+# This helps to balance the class distribution and improve the performance of machine learning models.
+# In this code, SMOTE is used to oversample the minority class in the training data (X_train, y_train).
+# The SMOTE algorithm is applied to create synthetic samples, increasing the number of minority class instances.
+# This helps to mitigate the impact of class imbalance and improve the accuracy of the logistic regression model.
+sm = SMOTE(random_state=42)
+X_train, y_train = sm.fit_resample(X_train, y_train)
 
 # Create an instance of Logistic Regression
 model = LogisticRegression()
 
+# GridSearch
+
+# param_grid = {
+#     "penalty": ["l1", "l2"],
+#     "C": [0.001, 0.01, 0.1, 1, 10, 100],
+# }
+# param_grid = {
+#     "penalty": ["l1", "l2", "elasticnet", "none"],
+#     "C": [0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000],
+# }
+# grid_search = GridSearchCV(model, param_grid, cv=5, scoring="recall")
+# grid_search = GridSearchCV(model, param_grid, cv=5, scoring="accuracy")
+
 # Fit the model to the data
+# grid_search.fit(X_train, y_train)
+
+# Get the best parameters and best score
+# best_params = grid_search.best_params_
+# best_score = grid_search.best_score_
+
+# print("Best Parameters:", best_params)
+# print("Best Score:", best_score)
+
+
+# Fit the model to the data
+# model = grid_search.best_estimator_
 model.fit(X_train, y_train)
 
-
 # Evaluate the model
-accuracy = model.score(X_test, y_test)
-print("Accuracy:", accuracy)
-# 0.9137572507387545
-
-# Generate predictions
 y_pred = model.predict(X_test)
-precision = precision_score(y_test, y_pred)
-# 0.5363984674329502
-recall = recall_score(y_test, y_pred)
-# 0.10014306151645208
 
+print(classification_report(y_test, y_pred))
 
-print("Precision:", precision)
-print("Recall:", recall)
+# roc curve
+# Calculate the predicted probabilities
+y_scores = model.predict_proba(X_test)[:, 1]
 
-# confusion matrix
-confusion_matrix(y_test, y_pred)
-# [[57883,   484],
-# [ 5032,   560]]
+# Calculate the false positive rate, true positive rate, and thresholds
+fpr, tpr, thresholds = roc_curve(y_test, y_scores)
 
-# calculate f1 score
-f1 = f1_score(y_test, y_pred)
-print("F1 score:", f1)
-# 0.16877637130801687
-
-
-# Test data
-test_data = pd.DataFrame(
-    {
-        "BMI": [3],
-        "Smoking": [1],
-        "AlcoholDrinking": [0],
-        "Stroke": [0],
-        "PhysicalHealth": [30.0],
-        "MentalHealth": [30.0],
-        "DiffWalking": [0],
-        "Sex": [1],
-        "AgeCategory": [11],
-        "PhysicalActivity": [1],
-        "SleepTime": [9],
-        "Asthma": [1],
-        "KidneyDisease": [1],
-        "SkinCancer": [0],
-        "Diabetic_0": [0],
-        "Diabetic_1": [0],
-        "Diabetic_No, borderline diabetes": [0],
-        "Diabetic_Yes (during pregnancy)": [1],
-        "GenHealth_Excellent": [0],
-        "GenHealth_Fair": [0],
-        "GenHealth_Good": [0],
-        "GenHealth_Poor": [0],
-        "GenHealth_Very good": [1],
-        "Race_American Indian/Alaskan Native": [0],
-        "Race_Asian": [0],
-        "Race_Black": [0],
-        "Race_Hispanic": [0],
-        "Race_Other": [0],
-        "Race_White": [1],
-    }
-)
-
-# Generate predictions
-predictions = model.predict(test_data)
-print(predictions)
+# Plot the ROC curve
+plt.plot(fpr, tpr)
+plt.plot(
+    [0, 1], [0, 1], linestyle="--", color="r"
+)  # Add the dotted line for random classifier
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("Receiver Operating Characteristic (ROC) Curve")
+plt.show()
