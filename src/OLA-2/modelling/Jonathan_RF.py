@@ -9,7 +9,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import confusion_matrix
 
 #df = pd.read_pickle('../data/cleaned.pkl')
-df = pd.read_pickle('../data/data_processed.pkl')
+df = pd.read_pickle('../data/processed/train_data_scaled_stratified.pkl')
 
 # Splitting the DataFrame
 X = df.drop('HeartDisease', axis=1)  # Replace 'HeartDisease' with the actual target column name if different
