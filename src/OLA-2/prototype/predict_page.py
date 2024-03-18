@@ -95,25 +95,48 @@ def nominal_variables(df):
 def show_predict_page():
     st.title("Heart Disease Prediction")
 
+    # Dynamic inputs using Streamlit widgets
+    bmi = st.slider("BMI", 0.0, 50.0, 25.0)
+    smoking = st.radio("Smoking", ["Yes", "No"])
+    alcohol_drinking = st.radio("Alcohol Drinking", ["Yes", "No"])
+    stroke = st.radio("Stroke", ["Yes", "No"])
+    physical_health = st.slider("Physical Health", 0, 30, 0)
+    mental_health = st.slider("Mental Health", 0, 30, 0)
+    diff_walking = st.radio("Difficulty Walking", ["Yes", "No"])
+    sex = st.radio("Sex", ["Female", "Male"])
+    age_category = st.selectbox("Age Category", ["18-24", "25-29", "30-34", "35-39", "40-44",
+                                                 "45-49", "50-54", "55-59", "60-64", "65-69",
+                                                 "70-74", "75-79", "80 or older"])
+    race = st.selectbox("Race", ["White", "Hispanic", "Black", "Asian",
+                                 "American Indian/Alaskan Native", "Other"])
+    diabetic = st.radio("Diabetic", ["Yes", "No", "No, borderline diabetes", "Yes (during pregnancy)"])
+    physical_activity = st.radio("Physical Activity", ["Yes", "No"])
+    gen_health = st.selectbox("General Health", ["Poor", "Fair", "Good", "Very good", "Excellent"])
+    sleep_time = st.slider("Sleep Time", 0, 24, 8)
+    asthma = st.radio("Asthma", ["Yes", "No"])
+    kidney_disease = st.radio("Kidney Disease", ["Yes", "No"])
+    skin_cancer = st.radio("Skin Cancer", ["Yes", "No"])
+
     data_row = {
-        "BMI": 11.0,
-        "Smoking": "Yes",
-        "AlcoholDrinking": "Yes",
-        "Stroke": "Yes",
-        "PhysicalHealth": 10.0,
-        "MentalHealth": 10.0,
-        "DiffWalking": "Yes",
-        "Sex": "Female",
-        "AgeCategory": "18-24",
-        "Race": "Asian",
-        "Diabetic": "Yes",
-        "PhysicalActivity": "Yes",
-        "GenHealth": "Very good",
-        "SleepTime": 1.0,
-        "Asthma": "Yes",
-        "KidneyDisease": "Yes",
-        "SkinCancer": "Yes",
+        "BMI": bmi,
+        "Smoking": smoking,
+        "AlcoholDrinking": alcohol_drinking,
+        "Stroke": stroke,
+        "PhysicalHealth": physical_health,
+        "MentalHealth": mental_health,
+        "DiffWalking": diff_walking,
+        "Sex": sex,
+        "AgeCategory": age_category,
+        "Race": race,
+        "Diabetic": diabetic,
+        "PhysicalActivity": physical_activity,
+        "GenHealth": gen_health,
+        "SleepTime": sleep_time,
+        "Asthma": asthma,
+        "KidneyDisease": kidney_disease,
+        "SkinCancer": skin_cancer,
     }
+
     df = pd.DataFrame([data_row])
 
     # Apply the loaded preprocessing functions
@@ -125,7 +148,8 @@ def show_predict_page():
     prediction = regressor_loaded.predict_proba(df)
     percentage = prediction[:, 1] * 100
 
-    st.subheader(f"The predicted outcome is {percentage[0]:.2f}%")
+    if st.button('Predict'):
+        st.subheader(f"The predicted outcome is {percentage[0]:.2f}%")
 
 
 show_predict_page()
