@@ -125,19 +125,50 @@ df["cluster"] = labels
 # Print the first few rows of the DataFrame to see the cluster labels
 df.head()
 
-from sklearn.cluster import DBSCAN
+# Calculate average value of each feature for each cluster
+for cluster in set(labels):
+    cluster_data = features[labels == cluster]
+    print(f"Cluster {cluster}:")
+    print(cluster_data.mean())
 
-# Apply DBSCAN
-# eps is the maximum distance between two samples for them to be considered as in the same neighborhood
-# min_samples is the minimum number of samples in a neighborhood for a point to be considered as a core point
-dbscan = DBSCAN(eps=0.5, min_samples=5)
-dbscan.fit(features_scaled)
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 
-# Get the cluster labels for each data point
-labels = dbscan.labels_
-
-# Add the labels to the original DataFrame
+# Add cluster labels as a new feature
 df["cluster"] = labels
 
-# Print the first few rows of the DataFrame to see the cluster labels
-print(df.head())
+# Split the data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(
+    df.drop("HeartDisease", axis=1), df["HeartDisease"], test_size=0.2, random_state=42
+)
+
+# Train a logistic regression model
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy}")
+
+
+### too computational intensive
+# from sklearn.cluster import DBSCAN
+
+# # Apply DBSCAN
+# # eps is the maximum distance between two samples for them to be considered as in the same neighborhood
+# # min_samples is the minimum number of samples in a neighborhood for a point to be considered as a core point
+# dbscan = DBSCAN(eps=0.5, min_samples=5)
+# dbscan.fit(features_scaled)
+
+# # Get the cluster labels for each data point
+# labels = dbscan.labels_
+
+# # Add the labels to the original DataFrame
+# df["cluster"] = labels
+
+# # Print the first few rows of the DataFrame to see the cluster labels
+# print(df.head())
