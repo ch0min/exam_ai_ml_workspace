@@ -43,43 +43,43 @@ plt.ylabel("Distortion")
 plt.show()
 
 # Silhouette Score
-k = 6  # Choose the number of clusters based on the elbow diagram
-kmeans = KMeans(n_clusters=k, random_state=42)
-kmeans.fit(features_scaled)
-labels = kmeans.labels_
+# k = 6  # Choose the number of clusters based on the elbow diagram
+# kmeans = KMeans(n_clusters=k, random_state=42)
+# kmeans.fit(features_scaled)
+# labels = kmeans.labels_
 
-score = silhouette_score(features_scaled, labels)
-print(f"Silhouette Score: {score}")
+# score = silhouette_score(features_scaled, labels)
+# print(f"Silhouette Score: {score}")
 
-# Silhouette Plot
-from sklearn.metrics import silhouette_samples
+# # Silhouette Plot
+# from sklearn.metrics import silhouette_samples
 
-silhouette_vals = silhouette_samples(features_scaled, labels)
+# silhouette_vals = silhouette_samples(features_scaled, labels)
 
-y_ax_lower, y_ax_upper = 0, 0
-yticks = []
-for i, c in enumerate(sorted(set(labels))):
-    c_silhouette_vals = silhouette_vals[labels == c]
-    c_silhouette_vals.sort()
-    y_ax_upper += len(c_silhouette_vals)
-    color = plt.cm.nipy_spectral(float(i) / len(set(labels)))
-    plt.barh(
-        range(y_ax_lower, y_ax_upper),
-        c_silhouette_vals,
-        height=1.0,
-        edgecolor="none",
-        color=color,
-    )
-    yticks.append((y_ax_lower + y_ax_upper) / 2.0)
-    y_ax_lower += len(c_silhouette_vals)
+# y_ax_lower, y_ax_upper = 0, 0
+# yticks = []
+# for i, c in enumerate(sorted(set(labels))):
+#     c_silhouette_vals = silhouette_vals[labels == c]
+#     c_silhouette_vals.sort()
+#     y_ax_upper += len(c_silhouette_vals)
+#     color = plt.cm.nipy_spectral(float(i) / len(set(labels)))
+#     plt.barh(
+#         range(y_ax_lower, y_ax_upper),
+#         c_silhouette_vals,
+#         height=1.0,
+#         edgecolor="none",
+#         color=color,
+#     )
+#     yticks.append((y_ax_lower + y_ax_upper) / 2.0)
+#     y_ax_lower += len(c_silhouette_vals)
 
-silhouette_avg = np.mean(silhouette_vals)
-plt.axvline(silhouette_avg, color="red", linestyle="--")
+# silhouette_avg = np.mean(silhouette_vals)
+# plt.axvline(silhouette_avg, color="red", linestyle="--")
 
-plt.yticks(yticks, [str(c) for c in sorted(set(labels))])
-plt.ylabel("Cluster")
-plt.xlabel("Silhouette score")
-plt.show()
+# plt.yticks(yticks, [str(c) for c in sorted(set(labels))])
+# plt.ylabel("Cluster")
+# plt.xlabel("Silhouette score")
+# plt.show()
 
 # num_clusters = 6
 
@@ -124,3 +124,20 @@ df["cluster"] = labels
 
 # Print the first few rows of the DataFrame to see the cluster labels
 df.head()
+
+from sklearn.cluster import DBSCAN
+
+# Apply DBSCAN
+# eps is the maximum distance between two samples for them to be considered as in the same neighborhood
+# min_samples is the minimum number of samples in a neighborhood for a point to be considered as a core point
+dbscan = DBSCAN(eps=0.5, min_samples=5)
+dbscan.fit(features_scaled)
+
+# Get the cluster labels for each data point
+labels = dbscan.labels_
+
+# Add the labels to the original DataFrame
+df["cluster"] = labels
+
+# Print the first few rows of the DataFrame to see the cluster labels
+print(df.head())
