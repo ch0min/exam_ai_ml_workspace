@@ -43,7 +43,7 @@ plt.ylabel("Distortion")
 plt.show()
 
 # Silhouette Score
-k = 3  # Choose the number of clusters based on the elbow diagram
+k = 6  # Choose the number of clusters based on the elbow diagram
 kmeans = KMeans(n_clusters=k, random_state=42)
 kmeans.fit(features_scaled)
 labels = kmeans.labels_
